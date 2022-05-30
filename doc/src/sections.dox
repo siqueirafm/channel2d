@@ -1,0 +1,842 @@
+//-----------------------------------------------------------------------------
+
+/** \page intro Introduction
+
+The  \c channel2d  Library consists  of a  set of  \c C++  classes for
+solving planar  instances of the <strong>channel  problem</strong>.  A
+detailed description of the channel problem and its solution (slightly
+different from the one implemented in the \c channel2d library) can be
+found in the following papers:
+
+\li  David  Lutterkort  and  J&ouml;rg  Peters.   Smooth  paths  in  a
+polygonal channel.   Proceedings of the  15th Annual ACM  Symposium on
+Computational Geometry (SoCG), Miami Beach, FL, USA, June 13-16, 1999.
+(<a href="http://www.cise.ufl.edu/research/SurfLab/papers/compgeom.ps.gz">PS</a>)
+
+\li Ashish Myles  and J&ouml;rg Peters.  Threading  splines through 3d
+channels.  \em  Computer-Aided   \em  Design  (CAD),  v.   37,  n.  2,
+pp.                 139-148,                 2005.                 (<a
+href="http://www.cise.ufl.edu/research/SurfLab/papers/02smChannel.pdf">PDF</a>)
+
+I really encourage you to read both  papers (at least Section 3 of the
+second  paper  from top  to  bottom)  before you  try  to  use the  \c
+channel2d library, as  the input file format requires  some idea about
+the input values and unknowns of the problem.
+
+For the  2D version of  the channel problem,  we are given  a channel,
+which is  a planar region delimited  by two polygonal chains:  the \em
+lower and \em upper \em envelopes of the channel. For instance,
+
+\image html  channel-1.jpg
+\image latex channel-1.eps "Example of an open channel" width=2in
+
+The two polygonal chains must have  the same number of vertices (resp.
+edges). There is a one-to-one correspondence between the set of points
+(resp. edges)  of the lower and  upper envelopes. To be  more precise,
+given the sequences  of vertices (resp. edges) of the  lower and upper
+envelopes,  obtained  by  a  \em  counterclockwise  traversal  of  the
+envelope, the  i-th vertex (resp.  edge)  of the lower envelope  is in
+correspondence  with  the  i-th  vertex (resp.   edge)  of  the  upper
+envelope.  However, the two corresponding edges need not be parallel.
+
+A solution  for the  problem is  a \f$C^k\f$ spline  curve of  a given
+degree  \f$d\f$, with  \f$k \ge  1\f$  and \f$d  \ge 2  \f$, which  is
+entirely  contained  in the  channel  and  whose endpoints  belong  to
+(distinct) extremities of the channel. For instance,
+
+\image html  channel-2.jpg
+\image latex channel-2.eps "Example of a solution for the channel problem" width=2in
+
+The spline curve in shown in green and its control polygon is shown in
+blue. Myles and Peters devised a solution for the channel problem as a
+linear  program  whose constraints  are  responsible  for keeping  the
+spline  inside the  channel. In  turn, the  objective function  can be
+tuned to influence on the geometry  of the spline. In the \c channel2d
+library, the same objective function  given by Myles and Peters' paper
+was   adopted,  which   aims   at  minimizing   the  total   curvature
+variation. This is done indirectly by defining a linear function based
+on the  second differences  of the  B&eacute;zier coefficients  of the
+curves that make up the spline.
+
+The  main  differences between  the  solution  implemented in  the  \c
+channel2d  library  and the  one  proposed  by  Myles and  Peters  are
+two-fold.   First, the  constraints of  the linear  program have  been
+slightly modified,  so that  the resulting  curve is  \f$C^2\f$ rather
+than \f$C^1\f$.  Second, the resulting curve is always a cubic uniform
+b-spline curve, i.e.,  the degree \f$d\f$ is fixed and  equal to 3. In
+Myles and Peters' paper, the degree  \f$d\f$ of the curve is chosen by
+the user.
+
+A channel  can either be open  (as in the previous  example) or closed
+(as shown below).
+
+\image html  channel-3.jpg
+\image html  channel-4.jpg
+
+\image latex channel-3.eps "Example of a closed channel" width=2in
+\image latex channel-4.eps "Example of a solution for the channel problem" width=2in
+
+To specify  an instance of the  channel problem, you must  provide the
+Cartesian coordinates,  \f$(lx_0, ly_0),  \ldots, (lx_n,  ly_n)\f$ and
+\f$(ux_0,  uy_0), \ldots,  (ux_n,  uy_n)\f$, of  the  lower and  upper
+envelopes,  respectively,   together  with  three   parameter  values:
+\f$ns\f$,  \f$nc\f$, and  \f$closed\f$.  Parameter  \f$ns\f$ specifies
+the number of b-spline segments of  the spline curve.  Since the curve
+is a  cubic b-spline,  each b-spline  curve segment  is given  by four
+consecutive control  points. So, the  number of control points  of the
+curve is equal to  \f$ns + 3\f$, and thus there is  no need to specify
+the  number  of  control  points of  the  curve.   Parameter  \f$nc\f$
+specifies  the number  of  \em  c-segments of  the  channel. Each  \em
+c-segment is given  by a pair of corresponding edges  of the lower and
+upper  envelopes  of  the  channel.  The  number  of  curve  segments,
+\f$ns\f$, must be a multiple of  the number of c-segment, \f$nc\f$. We
+have experimentally observed that choosing \f$ns = 3 \times nc\f$ is a
+good trade off between smoothness and  number of control points of the
+curve. Note that the number of vertices in each envelope is \f$nc+1\f$
+if the channel  is \em open, and  equal to \f$nc\f$ if  the channel is
+closed.
+
+For the first  example of the channel problem I  showed above, we have
+\f$ns = 9\f$ and \f$nc = 3\f$:
+
+\image html  channel-2.jpg
+\image latex channel-2.eps "Example of a channel" width=2in
+
+That is, the  spline consists of exactly \f$ns =  9\f$ curve segments.
+Starting from  the first curve  segment, each three  consecutive curve
+segments  are  bounded   (above  and  below)  by  the   same  pair  of
+corresponding edges of the channel: an  edge of the lower envelope and
+an edge of the upper envelope.  Each envelope has exactly \f$nc = 3\f$
+edges and  \f$nc + 1  = 4\f$ vertices.  The entire b-spline  curve has
+\f$ns + 3 = 12\f$ control points.
+
+For the second example of the  channel problem I showed above, we have
+\f$ns = 51\f$ and \f$nc = 17\f$:
+
+\image html  channel-4.jpg
+\image latex channel-4.eps "Example of a solution for the channel problem" width=2in
+
+That  is,  the  spline  consists   of  exactly  \f$ns  =  51\f$  curve
+segments.  Starting   from  the   first  curve  segment,   each  three
+consecutive curve segments  are bounded (above and below)  by the same
+pair  of corresponding  edges of  the channel:  an edge  of the  lower
+envelope and an edge of the upper envelope.  Each envelope has exactly
+\f$nc =  17\f$ edges and \f$nc  = 17\f$ vertices. The  entire b-spline
+curve has \f$ns + 3 = 54\f$ control points.
+
+It  is worth  mentioning  that  the channel  problem  may  not have  a
+solution  if the  value  of  \f$ns\f$ is  not  large  enough.  In  our
+experiments, letting  \f$ns = 3 \times  nc\f$ was sufficient to  get a
+solution for all  instances of the test dataset. But,  if I had chosen
+\f$ns = 2  \times nc\f$, for instance,  the code would not  be able to
+build  a few  curves from  the same  dataset.  If  an instance  of the
+channel problem has no solution, the main function of the \c channel2d
+library  will show  a message  to  indicate the  infeasibility of  the
+problem.  In principle, the method  could apply a midpoint subdivision
+to the curve and try to solve  the problem again, but such an approach
+has not  been implemented in  the current  version of the  library.  I
+also noted that the infeasibility of the problem is sometimes dictated
+by the channel  geometry. As a rule  of thumb, the lengths  of any two
+consecutive c-segments  of the channel  should not differ by  a factor
+greater  than 2.   This is  even  more critical  when two  consecutive
+c-segments meet  at a sharp  angle.  I  actually wrote code  to refine
+channels, so that the lengths of any two consecutive c-segments of the
+channel do not  differ by a factor  greater than 2. This  code has not
+been packaged together with the channel2d library code, but if you are
+interested in having a copy of it, please email me.
+
+*/
+
+//--------------------------------------------------------------------
+
+/** \page install Installing and compiling the library
+
+To install the library \c channel2d, clone its source code from GitHub
+
+git clone git@github.com:siqueirafm/channel2d.git
+
+After doing so, you should see see a directory named \c channel2d with
+subdirectories
+
+\c bin
+\c data
+\c doc
+\c include
+\c lib
+\c scripts
+\c src
+\c LICENSE.md
+\c README.md
+
+inside. Before you try to build  code, though, you need to install the
+GNU  package GLPK  <a href="http://www.gnu.org/software/glpk">GLPK</a>
+if  it is  not installed  already.  This  package contains  the linear
+program solver used by the \c channel2d library. If your computer runs
+Mac OSX,  then you can install  GLPK from \c macports  or \c homebrew.
+If your computer  is based on a Unix-like system,  such as Linux, then
+you can follow the installation instructions in the GLPK documentation
+pages.  If  your computer runs Windows,  then you may install  GLPK by
+following       the        instructions       you        find       <a
+href="http://winglpk.sourceforge.net">here</a>.     Once   you    have
+installed  GNU GLPK  in your  computer, take  note of  the directories
+where the header file \c glpk.h and the lib file \c libglpk.a are.  In
+my own  computer (running on Linux),  these files can be  found in the
+following directories:
+
+\code
+/usr/include
+\endcode
+
+and
+
+\code
+/usr/lib
+\endcode
+
+At this point, you can build  the library \c channel2d using \c CMake.
+To that end, you need to assign values to the following three \c CMake
+variables:
+
+\li \c CMAKE_INSTALL_PREFIX
+\li \c GLPK_INCLUDE_DIR
+\li \c GLPK_LIB_DIR
+
+The first variable should be assigned  the absolute path to the folder
+of the library (i.e., the directory \c channel2d). The second variable
+should be assigned  the absolute path to the header  file \c glpk.h on
+your  machine. Finally,  the  third variable  should  be assigned  the
+absolute path to the header file  \c libglpk.a on your machine. That's
+all!
+
+Finally, open a terminal and  enter subdirectory \c src/library of the
+directory \c channel2d. You should see a \c CMakeLists.txt file inside
+subdirectory  \c src/library.   Then, create  a subdirectory  named \c
+build  under  \c  src/library,  move  to \c  build,  and  execute  the
+following:
+
+\code
+cmake .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> 
+make  
+make install
+\endcode
+
+If all goes well, then you should  see the header and lib files of the
+library \c channel2d  in subdirectories \c include and \c  lib of your
+directory \c channel2d.  If your machine  runs Mac OSX, then you might
+want to  replace the first command-line  above to generate files  of a
+XCode project:
+
+\code
+cmake -G Xcode .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
+\endcode
+
+
+Next, you  must repeat the  same steps  above to create  an executable
+that allows  you to run the  examples that come with  library. Namely,
+enter  subdirectory \c  src/app of  the directory  \c channel2d.   You
+should  see  another \c  CMakeLists.txt  file  inside subdirectory  \c
+src/app.  Then, create a subdirectory named \c build under \c src/app,
+move to \c build, and execute the following:
+
+\code
+cmake .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> 
+make  
+make install
+\endcode
+
+If  all  goes   well,  then  you  should  see   an  executable  inside
+subdirectory \c  bin of  your directory \c  channel2d. Again,  if your
+machine  runs Mac  OSX,  then  you might  want  to  replace the  first
+command-line above to generate files of a XCode project:
+
+\code
+cmake -G Xcode .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
+\endcode
+
+The  current version  of  the library  was  successfully compiled  and
+tested using the following operating system(s) / compiler(s).
+
+\li Ubuntu 20.04.4 LTS / GNU gcc version 9.4.0
+\li Mac OSX 11.6.1 / clang version 13.0.0
+
+The \c  channel2d library code is  based on plain features  of the C++
+language. Apart from the GLPK  functions, there is nothing that should
+prevent the code from being successfully compiled by any wide used and
+up-to-date C++ compiler that support C++  11. However, if you face any
+problems, please feel free to contact  me. Use the email address given
+inside the sources files of the library.
+
+*/
+
+//-----------------------------------------------------------------------------
+
+/** \page api The CurveBuilder class API
+
+The main  class of  the \c  channel2d library  is \c  CurveBuilder. To
+solve  the channel  problem, we  first instantiate  an object  of this
+class using the class constructor:
+
+\code
+CurveBuilder(
+  size_t ns ,
+  size_t nc ,
+  bool closed ,
+  double* lx ,
+  double* ly ,
+  double* ux ,
+  double* uy
+)
+throw( ExceptionObject ) ;
+\endcode
+
+as in
+
+\code
+CurveBuilder* builder = 0 ;
+try {
+  builder = new CurveBuilder(
+                             np ,
+                             nc ,
+                             closed ,
+                             &lx[ 0 ] ,
+                             &ly[ 0 ] ,
+                             &ux[ 0 ] ,
+                             &uy[ 0 ] 
+                            ) ;
+}
+catch ( const ExceptionObject& xpt ) {
+  treat_exception( xpt ) ;
+  exit( EXIT_FAILURE ) ;
+}
+\endcode
+
+Variables \c ns  and \c nc hold the values  of the parameters \f$ns\f$
+and  \f$nc\f$,  respectively,  that   we  discussed  in  section  \ref
+intro. Variable \c  closed is boolean.  If its value  is \c true, then
+the channel is assumed  to be closed.  If its value  is \c false, then
+the channel is assumed  to be open. Variables \c lx and  \c ly are two
+arrays of elements of type \c double that hold the \f$x\f$ and \f$y\f$
+coordinates of the lower envelope  of the channel. Likewise, variables
+\c ux and \c uy are two arrays hold of elements of type \c double that
+hold the \f$x\f$ and \f$y\f$ coordinates  of the upper envelope of the
+channel.   It  is  assumed  that  the  vertices  with  coordinates  \c
+(lx[i],ly[i]) and  \c (ux[i],uy[i]) are corresponding  vertices of the
+lower  and   upper  envelopes,   respectively.   <strong>IT   IS  VERY
+IMPORTANT</strong> that the vertices are listed in the same order they
+are visited in  a \em counterclockwise \em traversal  of the envelopes
+(starting  at one  extreme of  the  channel).  This  is equivalent  to
+walking along  the edges of  the envelopes  from the "outside"  of the
+channel  in  a counterclockwise  direction.   The  reason for  such  a
+restriction is that my code must  compute outward normals to the edges
+of the envelopes,  and the direction of these normals  matters! If the
+vertices  are  not given  as  they  are  found in  a  counterclockwise
+traversal of the envelope edges, the  direction of the normals will be
+opposite to  the correct  one. As  a result,  the inequalities  of the
+linear program  will be  incorrectly defined,  which will  prevent the
+solver  from finding  the  correct optimal  solution  for the  channel
+problem.
+
+
+Once an instance  of the channel problem is created,  the next step is
+to find a solution for it.  Class \c CurveBuilder offers the following
+method for solving the channel problem:
+
+\code
+bool build( int& error ) ;
+\endcode
+
+This method calls the GNU GLPK linear program (LP) solver to solve the
+instance  of the  channel problem  defined by  the constructor  of the
+class  \c CurveBuilder.   If the  solver  finds a  solution, \c  build
+returns the logic value \c true. Otherwise, it returns the logic value
+\c false. In  addition, the error code returned by  the GLPK solver is
+stored in \c  error.  Using this error  code, we can find  out why the
+solver could not solve the problem.  If the problem has been specified
+correctly  (and if  my code  has no  bug!), the  fact that  the solver
+cannot  find a  solution is  mostly due  to the  infeasibility of  the
+problem.
+
+A typical call for \c build() is shown below:
+
+\code
+int error ;
+bool res = b.build( error ) ;
+\endcode
+
+If the  value of \c res  is \c true,  then we can recover  the control
+points  of  the splines  by  invoking  another  function of  class  \c
+CurveBuilder:
+
+\code
+double get_control_value( unsigned i , unsigned v ) const throw( ExceptionObject ) 
+\endcode
+
+The above  function has  two input  parameters: \c i  and \c  v. These
+parameters  tells  function  \c  get_control_value that  we  want  the
+\f$v\f$-th coordinate of the \f$i\f$-th  control point of the b-spline
+curve,  i.e., \f$b_{i,v}\f$.   Parameter \c  i  holds a  value in  the
+interval \f$[0, ns  + 2]\f$.  Parameter \c  v holds the value  0 or 1,
+where 0 corresponds to the \f$x\f$ coordinate and 1 corresponds to the
+\f$y\f$  coordinate of  \f$b_{i,v}\f$.   The following  piece of  code
+prints out the  coordinates of all control points of  the spline found
+by the GNU GLPK solver:
+
+\code
+for ( size_t i = 0 ; i < NumberOfControlPoints ; i++ ) {
+  double x ;
+  double y ;
+  try {
+    x = b.get_control_value( i , 0 ) ;
+    y = b.get_control_value( i , 1 ) ;
+  }
+  catch ( const ExceptionObject& xpt ) {
+    treat_exception( xpt ) ;
+    ou.close() ;
+    exit( EXIT_FAILURE ) ;
+  }
+}
+\endcode
+
+The set  of public methods of  class \c CurveBuilder consists  of many
+more functions. But, the ones  presented here are enough to prescribe,
+solve,  and  obtain  the  solution  of  an  instance  of  the  channel
+problem. Section \ref use describes a  simple \c C++ program to read a
+file with the description of an instance of the channel problem, solve
+the problem using the functions I  explained before, and then save the
+solution of the problem to an output file.
+
+*/
+
+//-----------------------------------------------------------------------------
+
+/** \page use Using the library API
+
+I wrote a  simple \c C++ program  to show how to use  the \c channel2d
+library to  solve an  instance of  the channel  problem. Here,  I will
+examine  and explain  each  line  of the  \c  main()  function of  the
+program. You  can find  the program  in the  subdirectory \c  tst. The
+program has  only one file:  \c main.cpp.  Below are the  header files
+included in \c main.cpp:
+
+\code
+#include <iostream>                 // std::cout, std::endl, std::cerr
+#include <fstream>                  // std::ifstream, std::ofstream
+#include <sstream>                  // std::sstream
+#include <string>                   // std::string
+#include <cstdlib>                  // exit, EXIT_SUCCESS, EXIT_FAILURE, size_t
+#include <iomanip>                  // std::setprecision
+#include <cassert>                  // assert
+#include <ctime>                    // time, clock, CLOCKS_PER_SEC, clock_t
+#include <cmath>                    // fabs
+
+#include "exceptionobject.hpp"      // channel::ExceptionObject
+#include "curvebuilder.hpp"         // channel::CurveBuilder
+
+using std::cin  ;
+using std::cout ;
+using std::cerr ;
+using std::endl ;
+using std::string ;
+using channel::CurveBuilder ;
+using channel::ExceptionObject ;
+\endcode
+
+File  \c   curvebuilder.hpp  contains  the  definition   of  class  \c
+CurveBuilder and  file \c exceptionobject.hpp contains  the definition
+of  a  class, \c  ExceptionObject,  that  I  use  to throw  and  treat
+exceptions  in  a  more  friendly   way.  The  next  lines  check  the
+command-line arguments and read an input file with the input values of
+an instance of the channel problem:
+
+\code
+  if ( ( argc != 3 ) && ( argc != 4 ) ) {
+    cerr << "Usage: "
+         << endl
+         << "\t\t channel2d arg1 arg2 [ arg3 ]"
+         << endl
+         << "\t\t arg1: name of the file describing the polygonal channel"
+         << endl
+         << "\t\t arg2: name of the output file describing the computed cubic b-spline curve"
+         << endl
+         << "\t\t arg3: name of an output file to store a CPLEX format definition of the LP solved by this program (OPTIONAL)"
+         << endl
+         << endl ;
+    cerr.flush() ;
+    
+    return EXIT_FAILURE ;
+  }
+  
+  string fn1( argv[ 1 ] ) ;
+
+  size_t ns ;
+  size_t nc ;
+  bool closed ;
+  double* lx ;
+  double* ly ;
+  double* ux ;
+  double* uy ;
+
+  start = clock() ;
+  try {
+    read_input( fn1 , ns , nc , closed , lx , ly , ux , uy ) ;
+  }
+  catch ( const ExceptionObject& xpt ) {
+    treat_exception( xpt ) ;
+    exit( EXIT_FAILURE ) ;
+  }  
+\endcode
+
+As  we can  see,  the program  requires  two or  three  file names  as
+command-line arguments. The  first name refers to  the file containing
+the input  values of an instance  of the channel problem.   The second
+name refers to the file in which  we want the program to write out the
+control points  of the resulting  spline curve, i.e., the  solution of
+the channel  problem. The third name  is \em optional and  refers to a
+file  in which  the program  will store  a description  of the  linear
+program corresponding to the instance  of the channel problem given as
+input. I initially  created this option as a way  of debugging my code
+as needed. The  description of the LP is given  in CPLEX format, which
+is quite easy  to read and look  for mistakes.  We can  also give this
+description to any LP solver that  takes in files in CPLEX format. The
+GNU GLPK itself is such a solver. We can use its \c glpsol function to
+solve an instance of a linear  program written in CPLEX format. When I
+was done  with the  first version of  the code, I  though it  would be
+useful to leave the option of  generating this file in the distributed
+version of the code.
+
+After checking  the number of  input command-line arguments,  the code
+reads in the input file using function \c read_input().  This function
+recovers the  input values of the  instance of the problem:  \c ns, \c
+nc, \c  closed, \c lx  , \c ly,  \c ux, and  \c uy.  I  already talked
+about all these  parameters.  Observe that the memory  occupied by the
+arrays \c lx , \c ly, \c ux, and \c uy is allocated inside function \c
+read_input().
+
+The next  lines invoke the  constructor of \c CurvedBuilder  to create
+the given instance of the channel problem:
+
+\code
+CurveBuilder* builder = 0 ;
+try {
+  builder = new CurveBuilder(
+                             ns ,
+                             nc ,
+                             closed ,
+                             &lx[ 0 ] ,
+                             &ly[ 0 ] ,
+                             &ux[ 0 ] ,
+                             &uy[ 0 ] 
+                            ) ;
+}
+catch ( const ExceptionObject& xpt ) {
+  treat_exception( xpt ) ;
+  exit( EXIT_FAILURE ) ;
+}
+\endcode
+
+Once the  instance of the channel  problem has been created,  which is
+equivalent to saying that an object  of \c class CurveBuilder has been
+instantiated, we  can ask the  object to  solve the problem,  which is
+done by invoking function \c build() (see section \ref api).
+
+\code
+int error ;
+bool res = builder->build( error ) ;
+\endcode
+
+If this  function returns  \c true,  the solver  has found  an optimal
+solution for  the problem, and thus  the code can recover  the control
+points  of the  resulting spline.   Otherwise, the  code prints  out a
+message to  explain why the solver  could not find a  solution for the
+problem. This is done by examining  the value of the variable \c error
+passed to function \c build(). See below:
+
+\code
+if ( res ) {
+  string fn2( argv[ 2 ] ) ;
+  write_solution( fn2 , *builder ) ;
+}
+else {
+  cerr << endl
+       << "ATTENTION: "
+       << endl
+       << builder->get_solver_error_message( error )
+       << endl
+       << endl ;
+}
+\endcode
+
+Function  \c  get_solver_error_message()  from  the API  of  class  \c
+CurveBuilder is invoked when the solver cannot find a solution for the
+given instance of the channel problem.  The GNU GLPK solver returns an
+error code  that allows us to  know why the solver  failed. When given
+this code,  function \c get_solver_error_message() simply  compares it
+with all error codes provided by  the GLPK, and then returns a message
+explaining the meaning of the error code.
+
+If a  third file  name is provided  among the  command-line arguments,
+then a  description of the  linear program corresponding to  the given
+instance of  the channel problem  is written out  to a file  using the
+CPLEX format. As I mentioned before,  such an output is only necessary
+if we want to verify whether my  code was able to assemble the correct
+linear  program. Another  possible use  for it  is when  the GNU  GLPK
+solver is  not able to  find a solution. We  can then give  the linear
+program to another solver or to the \c glpsol function of the GNU GLPK
+to obtain more information on why  the problem could not be solved. It
+might be the case that additional information can actually tell us the
+exact point of the channel that caused infeasibility of the problem.
+
+\code
+  if ( argc == 4 ) {
+    string fn3( argv[ 3 ] ) ;
+    write_lp( fn3 , *builder ) ;
+  }
+\endcode
+
+The remaining of the \c main() function just releases memory:
+
+\code
+  if ( lx != 0 ) delete[ ] lx ;
+  if ( ly != 0 ) delete[ ] ly ;
+  if ( ux != 0 ) delete[ ] ux ;
+  if ( uy != 0 ) delete[ ] uy ;
+  if ( builder != 0 ) delete builder ;
+  
+  return EXIT_SUCCESS ;
+\endcode
+
+The  auxiliary  functions  of  the program  are  \c  read_input(),  \c
+write_solution(), and \c write_lp().  I  will only comment on the code
+of the second function.
+
+Function \c  write_solution() must  obtain the  control points  of the
+resulting spline in order  to write them out to a  file.  This is done
+by invoking  function \c get_control_point() of  class \c CurveBuilder
+as  explained  in  section  \ref  api.    Below  is  the  body  of  \c
+write_solution():
+
+\code
+using std::endl ;
+std::ofstream ou( fn.c_str() ) ;
+if ( ou.is_open() ) {
+  ou << std::setprecision( 6 ) << std::fixed ;
+  const size_t NumberOfControlPoints = b.get_number_of_control_points() ;    
+  ou << NumberOfControlPoints
+     << '\t'
+     << 3
+     << endl ;
+    
+  for ( size_t i = 0 ; i < NumberOfControlPoints ; i++ ) {
+    double x ;
+    double y ;
+    try {
+      x = b.get_control_value( i , 0 ) ;
+      y = b.get_control_value( i , 1 ) ;
+    }
+    catch ( const ExceptionObject& xpt ) {
+      treat_exception( xpt ) ;
+      ou.close() ;
+      exit( EXIT_FAILURE ) ;
+    }
+    ou << x << '\t' << y << endl ;
+  }
+  ou.close() ;
+}
+\endcode
+
+*/
+
+//-----------------------------------------------------------------------------
+
+/** \page example Examples and file formats
+
+To solve the channel problem using  the \c main() function I described
+in Section \ref use,  you must give the function a  \c .chn file. This
+file  must  contain  the  complete information  about  one  particular
+instance of  the channel problem. The  \em first \em line  of the file
+contains the values of the input parameters
+
+\f$\textit{ns}\f$   \f$\textit{nc}\f$   \f$\textit{closed}\f$ 
+
+in this order, where \f$\textit{ns}\f$ is the number of curve segments
+of  the entire  b-spline  curve, \f$\textit{nc}\f$  is  the number  of
+c-segments  of the  channel, and  \f$\textit{closed}\f$ is  a flag  to
+indicate  whether the  channel is  open or  closed.  See  section \ref
+intro for a  detailed description of the above  parameters.  After the
+first line,  there are \f$2  \times nn \f$ lines,  where \f$nn =  nc +
+1\f$  if  the curve  is  open,  and \f$nn  =  nc\f$  if the  curve  is
+closed. Each line contains the  first and second Cartesian coordinates
+of a vertex of the lower envelope of the channel:
+
+\f$\textit{lx}[0]\f$    \f$\textit{ly}[0]\f$ <br>
+\f$\textit{lx}[1]\f$    \f$\textit{ly}[1]\f$ <br>
+\c ... <br>
+\f$\textit{lx}[\textit{nn}-1]\f$    \f$\textit{ly}[\textit{nn}-1]\f$ <br>
+
+Recall that  the coordinates  must be  given in  the same  order their
+corresponding vertices  appear in a counterclockwise  traversal of the
+"outside" of  the lower envelope, from  one extreme of the  channel to
+the other.  Right  after the coordinates of the vertices  of the lower
+envelope, the  coordinates of the  vertices of the upper  envelope are
+listed using the same rules:
+
+\f$\textit{ux}[0]\f$    \f$\textit{uy}[0]\f$ <br>
+\f$\textit{ux}[1]\f$    \f$\textit{uy}[1]\f$ <br>
+\c ... <br>
+\f$\textit{ux}[\textit{nn}-1]\f$    \f$\textit{uy}[\textit{nn}-1]\f$ <br>
+
+Recall    also    that    \f$(\textit{lx}[i],\textit{ly}[i])\f$    and
+\f$(\textit{ux}[i],\textit{uy}[i])\f$  must  be   coordinates  of  the
+corresponding vertices of the lower and upper envelopes, respectively.
+
+Here is an example of a typical \c .chn file:
+
+\code
+9	3	0
+639.130835	36.518734
+632.034992	36.165892
+634.138728	31.121699
+639.338308	29.430348
+638.869165	38.481266
+630.965008	36.834108
+632.861272	29.878301
+638.661692	27.569652
+\endcode
+
+The above file describes the \em open channel
+
+\image html  channel-1.jpg
+\image latex channel-1.eps "Example of a channel" width=2in
+
+and asks  for a b-spline  of degree  3 consisting of  \f$ns=9\f$ curve
+segments.   Starting from  the first  segment, each  three consecutive
+segments are delimited by one c-segment  of the channel (i.e., by only
+one  pair of  edges).  Each  envelope  of the  channel has  \f$nn=4\f$
+vertices, and  the channel is open.   Observe that \f$nn =  nc + 1\f$.
+Function \c read_input() (see section \ref  use) reads in the input \c
+.chn   file    and   obtains   the   values    of   \f$\textit{ns}\f$,
+\f$\textit{nc}\f$,        \f$\textit{nn}\f$,        \f$\textit{lx}\f$,
+\f$\textit{ly}\f$, \f$\textit{ux}\f$, and  \f$\textit{uy}\f$. Once the
+problem is solved, the program generates an output file with extension
+\c .spl.  This file contains  the Cartesian coordinates of the control
+points of the entire b-spline curve. The  first line of a \c .spl file
+specifies the  total number of  control points  and the degree  of the
+spline (which is always 3 equal to ), i.e.,
+
+\f$\textit{ncp}\f$    \f$\textit{dg}\f$
+
+After the first line, there are \c ncp lines.  Each line specifies the
+pair of Cartesian  coordinates of a control  point.  These coordinates
+are listed as follows:
+
+\f$b_{0,x} , b_{0,y}\f$ <br>
+\f$b_{1,x} , b_{1,y}\f$ <br>
+\f$\vdots\f$ <br>
+\f$b_{ncp-1,x} , b_{ncp-1,y}\f$ <br>
+
+where \f$b_{ncp-1,x}\f$ and \f$b_{ncp-1,y}\f$ are the first and second
+Cartesian  coordinates   of  the  \f$i\f$-th  control   point  of  the
+\f$p\f$-th B&eacute;zier  curve of  resulting spline. Below,  you find
+the \c .spl file corresponding to  the solution of the instance of the
+channel problem described by the \c  .chn file given above, as well as
+a plot of the spline and its control points:
+
+\code
+12	3
+641.603639	38.017630
+638.973833	37.696253
+636.344027	37.374876
+633.714221	37.053499
+631.084414	36.732122
+631.590112	34.617083
+632.095810	32.502043
+633.577118	30.387004
+635.362191	29.695979
+637.147265	29.004955
+638.932338	28.313930
+640.717412	27.622906
+\endcode
+
+\image html  channel-2.jpg
+\image latex channel-2.eps "Example of a solution for the channel problem" width=2in
+
+You can  find more examples  of \c .chn  files in the  subdirectory \c
+data/channels. I wrote a script, \c run.sh, that executes \c channel2d
+on every  input file in  subdirectory \c data/channels, and  then save
+the resulting \c .spl files  in subdirectory \c data/spcurves. If your
+computer runs Mac  OSX or a Unix-like system, then  you can execute \c
+run.sh
+
+\code
+sh run.sh
+\endcode
+
+inside subdirectory \c scripts. I  didn't provide any GUI to visualize
+the curves specified by the \c .spl files. If you decide to write your
+own \c .chn  file to be tested  by my program, execute  the line below
+inside subdirectory \c  bin, where the program \c  channel2d should be
+located:
+
+\code
+channel2d < your input CHN file > < your output SPL file >
+\endcode
+
+If you want to see the instance  of the linear program assembled by my
+program and solved by the GLPK solver, execute the line
+
+\code
+channel2d < your input CHN file > < your output SPL file > < your output LP file >
+\endcode
+
+When the  execution ends, the third  file stores a description  of the
+instance of the  linear program using the CPLEX  language. Usually, we
+save such a file  with the extension \c .lp. You  can use the function
+\c glpsol of the GNU GLPK to solve the linear program written in CPLEX
+language. To that end, execute:
+
+\code
+glpsol --lp < your LP file >
+\endcode
+
+I am  assuming that you installed  GLPK in your computer  and that the
+path to function  \c glpsol is known. By executing  \c glpsol, you can
+compare the solution given by this function with the solution produced
+by my code. They  should be the same! If that is not  the case, then I
+made  a  mistake  when  writing  the code  for  generating  the  CPLEX
+description  of the  instance of  the linear  program that  solves the
+channel problem.
+
+*/
+
+//-----------------------------------------------------------------------------
+
+/** \page lic License
+
+<p><strong>Copyright Notice</strong>
+
+Copyright &copy; 2016 Marcelo Siqueira.  All rights reserved.
+
+<p><strong>Terms and Conditions</strong>
+
+<p> This  program is distributed WITHOUT  ANY WARRANTY, and it  may be
+freely redistributed  under the  condition that the  copyright notices
+are not removed,  and no compensation is  received. Private, research,
+and institutional use is free. Distribution  of this code as part of a
+commercial system is  permissible ONLY BY DIRECT  ARRANGEMENT WITH THE
+AUTHOR.
+
+*/
+
+//-----------------------------------------------------------------------------
+
+/** \page ack Acknowledgements
+
+I would  like to acknowledge  Dr. J&ouml;rg  Peters for hosting  me at
+CISE-UFL  during my  sabbatical  year (2015-2016),  and for  patiently
+helped me understand the papers that underlie the \c channel2d library
+code.
+
+*/
+
+//-----------------------------------------------------------------------------
+
