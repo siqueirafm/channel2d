@@ -1,38 +1,18 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-
-project(channel2d LANGUAGES CXX)
-
-if (NOT CMAKE_BUILD_TYPE)
-  set (CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-endif()
-
-message (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-
-message (STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX}")
-
-if (NOT DEFINED GLPK_INCLUDE_DIR)
-  set (GLPK_INCLUDE_DIR /usr/include)
-  message (STATUS "GLPK_INCLUDE_DIR is ${GLPK_INCLUDE_DIR}")
-endif()
-
-if (NOT DEFINED GLPK_LIB_DIR)
-  set (GLPK_LIB_DIR /usr/lib)
-  message (STATUS "GLPK_LIB_DIR is ${GLPK_LIB_DIR}")
-endif()
-
 set (CHANNEL2D_INC ${CMAKE_CURRENT_SOURCE_DIR}/headers)
 set (CHANNEL2D_SRC ${CMAKE_CURRENT_SOURCE_DIR}/sources)
 
 file (GLOB HPP_FILES ${CHANNEL2D_INC}/*.hpp)
 file (GLOB CPP_FILES ${CHANNEL2D_SRC}/*.cpp)
 
-add_library(channel2d
+# Make a static library (omit STATIC if you want user setting to decide)
+add_library(Channel2D
   STATIC
     ${HPP_FILES}
     ${CPP_FILES}
   )
 
-target_include_directories(channel2d
+# Library need this directories, and its users will need them too.
+target_include_directories(Channel2D
   PUBLIC 
     $<INSTALL_INTERFACE:include>
   PRIVATE
@@ -40,22 +20,24 @@ target_include_directories(channel2d
     ${CHANNEL2D_INC}
 )
 
-target_compile_features(channel2d PRIVATE cxx_std_11)
+# All users of this library will need at list C++ 11
+target_compile_features(Channel2D PUBLIC cxx_std_11)
 
+# Set compiler options for MS Visual Studio and everything else
 if (MSVC)
   if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(channel2d PRIVATE /W4 /WX- /O2 /MD)
+    target_compile_options(Channel2D PRIVATE /W4 /WX- /O2 /MD)
   else ()
-    target_compile_options(channel2d PRIVATE /W4 /WX- /MDd)
+    target_compile_options(Channel2D PRIVATE /W4 /WX- /MDd)
   endif ()
 else ()
   list (APPEND flags )
   if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(channel2d PRIVATE -Wall -Wextra -Werror -pedantic -O3)
+    target_compile_options(Channel2D PRIVATE -Wall -Wextra -Werror -pedantic -O3)
   else ()
-    target_compile_options(channel2d PRIVATE -Wall -Wextra -Werror -pedantic)
+    target_compile_options(Channel2D PRIVATE -Wall -Wextra -Werror -pedantic)
   endif ()
 endif ()
 
-install(TARGETS channel2d DESTINATION lib)
+install(TARGETS Channel2D DESTINATION lib)
 install(FILES ${HPP_FILES} DESTINATION include)

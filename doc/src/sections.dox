@@ -193,7 +193,7 @@ and
 /usr/lib
 \endcode
 
-At this point, you can build  the library \c channel2d using \c CMake.
+At this point, you can build  the library \c Channel2D using \c CMake.
 To that end, you need to assign values to the following three \c CMake
 variables:
 
@@ -208,50 +208,24 @@ your  machine. Finally,  the  third variable  should  be assigned  the
 absolute path to the header file  \c libglpk.a on your machine. That's
 all!
 
-Finally, open a terminal and  enter subdirectory \c src/library of the
-directory \c channel2d. You should see a \c CMakeLists.txt file inside
-subdirectory  \c src/library.   Then, create  a subdirectory  named \c
-build  under  \c  src/library,  move  to \c  build,  and  execute  the
-following:
+Finally, open a terminal and type the following:
 
 \code
-cmake .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> 
-make  
-make install
+cmake -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
+cmake --build build
+cmake --install build <path to your directory channel2d>
 \endcode
 
-If all goes well, then you should  see the header and lib files of the
-library \c channel2d  in subdirectories \c include and \c  lib of your
-directory \c channel2d.  If your machine  runs Mac OSX, then you might
-want to  replace the first command-line  above to generate files  of a
-XCode project:
-
-\code
-cmake -G Xcode .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
-\endcode
-
-
-Next, you  must repeat the  same steps  above to create  an executable
-that allows  you to run the  examples that come with  library. Namely,
-enter  subdirectory \c  src/app of  the directory  \c channel2d.   You
-should  see  another \c  CMakeLists.txt  file  inside subdirectory  \c
-src/app.  Then, create a subdirectory named \c build under \c src/app,
-move to \c build, and execute the following:
-
-\code
-cmake .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> 
-make  
-make install
-\endcode
-
-If  all  goes   well,  then  you  should  see   an  executable  inside
-subdirectory \c  bin of  your directory \c  channel2d. Again,  if your
-machine  runs Mac  OSX,  then  you might  want  to  replace the  first
+If your machine runs Mac OSX, then you might want to replace the first
 command-line above to generate files of a XCode project:
 
 \code
-cmake -G Xcode .. -DCMAKE_INSTALL_PREFIX=<path to directory channel2d> -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
+cmake -G Xcode -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
 \endcode
+
+If all  goes well, then you  should see the library  file \c Channel2D
+inside subdirectory \c lib, and the executable \c Channel2D-App inside
+subdirectory \c  bin, of your  directory \c channel2d.
 
 The  current version  of  the library  was  successfully compiled  and
 tested using the following operating system(s) / compiler(s).

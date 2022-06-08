@@ -11,6 +11,6 @@ do
     output1=`echo $output1 | sed -e 's/\.chn/\.spl/'`
     output2=`echo $output2 | sed -e 's/\.chn/\.pl/'`
   
-    echo executing ../bin/channel2d-app $file $output1 $output2
-    echo `../bin/channel2d-app $file $output1 $output2`
+    echo executing ../bin/Channel2D-App $file $output1 $output2
+    echo `../bin/Channel2D-App $file $output1 $output2`
 done
