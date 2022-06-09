@@ -2,10 +2,10 @@
 
 /** \page intro Introduction
 
-The  \c channel2d  Library consists  of a  set of  \c C++  classes for
+The  \c Channel2D  Library consists  of a  set of  \c C++  classes for
 solving planar  instances of the <strong>channel  problem</strong>.  A
 detailed description of the channel problem and its solution (slightly
-different from the one implemented in the \c channel2d library) can be
+different from the one implemented in the \c Channel2D library) can be
 found in the following papers:
 
 \li  David  Lutterkort  and  J&ouml;rg  Peters.   Smooth  paths  in  a
@@ -51,7 +51,7 @@ The spline curve in shown in green and its control polygon is shown in
 blue. Myles and Peters devised a solution for the channel problem as a
 linear  program  whose constraints  are  responsible  for keeping  the
 spline  inside the  channel. In  turn, the  objective function  can be
-tuned to influence on the geometry  of the spline. In the \c channel2d
+tuned to influence on the geometry  of the spline. In the \c Channel2D
 library, the same objective function  given by Myles and Peters' paper
 was   adopted,  which   aims   at  minimizing   the  total   curvature
 variation. This is done indirectly by defining a linear function based
@@ -59,7 +59,7 @@ on the  second differences  of the  B&eacute;zier coefficients  of the
 curves that make up the spline.
 
 The  main  differences between  the  solution  implemented in  the  \c
-channel2d  library  and the  one  proposed  by  Myles and  Peters  are
+Channel2D  library  and the  one  proposed  by  Myles and  Peters  are
 two-fold.   First, the  constraints of  the linear  program have  been
 slightly modified,  so that  the resulting  curve is  \f$C^2\f$ rather
 than \f$C^1\f$.  Second, the resulting curve is always a cubic uniform
@@ -130,7 +130,7 @@ experiments, letting  \f$ns = 3 \times  nc\f$ was sufficient to  get a
 solution for all  instances of the test dataset. But,  if I had chosen
 \f$ns = 2  \times nc\f$, for instance,  the code would not  be able to
 build  a few  curves from  the same  dataset.  If  an instance  of the
-channel problem has no solution, the main function of the \c channel2d
+channel problem has no solution, the main function of the \c Channel2D
 library  will show  a message  to  indicate the  infeasibility of  the
 problem.  In principle, the method  could apply a midpoint subdivision
 to the curve and try to solve  the problem again, but such an approach
@@ -142,7 +142,7 @@ greater  than 2.   This is  even  more critical  when two  consecutive
 c-segments meet  at a sharp  angle.  I  actually wrote code  to refine
 channels, so that the lengths of any two consecutive c-segments of the
 channel do not  differ by a factor  greater than 2. This  code has not
-been packaged together with the channel2d library code, but if you are
+been packaged together with the Channel2D library code, but if you are
 interested in having a copy of it, please email me.
 
 */
@@ -151,27 +151,35 @@ interested in having a copy of it, please email me.
 
 /** \page install Installing and compiling the library
 
-To install the library \c channel2d, clone its source code from GitHub
+To install the library \c Channel2D, clone its source code from GitHub
 
 git clone git@github.com:siqueirafm/channel2d.git
 
-After doing so, you should see see a directory named \c channel2d with
-subdirectories
+After doing so, you should see see a directory named \c Channel2D with
+subdirectories and files
 
 \c bin
-\c data
-\c doc
-\c include
-\c lib
-\c scripts
-\c src
-\c LICENSE.md
-\c README.md
+
+\c data 
+
+\c doc 
+
+\c include 
+
+\c lib 
+
+\c scripts 
+
+\c src 
+
+\c LICENSE.md 
+
+\c README.md 
 
 inside. Before you try to build  code, though, you need to install the
 GNU  package GLPK  <a href="http://www.gnu.org/software/glpk">GLPK</a>
 if  it is  not installed  already.  This  package contains  the linear
-program solver used by the \c channel2d library. If your computer runs
+program solver used by the \c Channel2D library. If your computer runs
 Mac OSX,  then you can install  GLPK from \c macports  or \c homebrew.
 If your computer  is based on a Unix-like system,  such as Linux, then
 you can follow the installation instructions in the GLPK documentation
@@ -194,24 +202,30 @@ and
 \endcode
 
 At this point, you can build  the library \c Channel2D using \c CMake.
-To that end, you need to assign values to the following three \c CMake
+To that end, you need to assign values to the following four \c CMake
 variables:
 
 \li \c CMAKE_INSTALL_PREFIX
 \li \c GLPK_INCLUDE_DIR
 \li \c GLPK_LIB_DIR
+\li \c GLPK_LIB_FILENAME
 
 The first variable should be assigned  the absolute path to the folder
 of the library (i.e., the directory \c channel2d). The second variable
 should be assigned  the absolute path to the header  file \c glpk.h on
-your  machine. Finally,  the  third variable  should  be assigned  the
-absolute path to the header file  \c libglpk.a on your machine. That's
-all!
+your machine. The third variable  should be assigned the absolute path
+to the GLPK library file. If you use a Unix-like system, then the name
+may simply be \c  glpk. If you use Windows and  you collected the GLPK
+library            from            the           website            <a
+href="https://winglpk.sourceforge.net">GLPK for  Windows</a>, then the
+library filename is \c glpk_4_65.dll.
+
+That's all!
 
 Finally, open a terminal and type the following:
 
 \code
-cmake -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
+cmake -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> -DGLPK_LIB_FILENAME=<GLPK lib file name>
 cmake --build build
 cmake --install build <path to your directory channel2d>
 \endcode
@@ -220,7 +234,7 @@ If your machine runs Mac OSX, then you might want to replace the first
 command-line above to generate files of a XCode project:
 
 \code
-cmake -GXcode -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
+cmake -GXcode -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> -DGLPK_LIB_FILENAME=<GLPK lib file name>
 \endcode
 
 If all  goes well, then you  should see the library  file \c Channel2D
@@ -230,10 +244,11 @@ subdirectory \c  bin, of your  directory \c channel2d.
 The  current version  of  the library  was  successfully compiled  and
 tested using the following operating system(s) / compiler(s).
 
-\li Ubuntu 20.04.4 LTS / GNU gcc version 9.4.0
-\li Mac OSX 11.6.1 / clang version 13.0.0
+\li Ubuntu 20.04.4 LTS / GNU gcc (Version 9.4.0)
+\li Mac OSX 11.6.1 / clang (Version 13.0.0)
+\li Windows 10 / Visual Studio 15 2017 (Version 15.9.38)
 
-The \c  channel2d library code is  based on plain features  of the C++
+The \c  Channel2D library code is  based on plain features  of the C++
 language. Apart from the GLPK  functions, there is nothing that should
 prevent the code from being successfully compiled by any wide used and
 up-to-date C++ compiler that support C++  11. However, if you face any
@@ -246,7 +261,7 @@ inside the sources files of the library.
 
 /** \page api The CurveBuilder class API
 
-The main  class of  the \c  channel2d library  is \c  CurveBuilder. To
+The main  class of  the \c  Channel2D library  is \c  CurveBuilder. To
 solve  the channel  problem, we  first instantiate  an object  of this
 class using the class constructor:
 
@@ -385,7 +400,7 @@ solution of the problem to an output file.
 
 /** \page use Using the library API
 
-I wrote a  simple \c C++ program  to show how to use  the \c channel2d
+I wrote a  simple \c C++ program  to show how to use  the \c Channel2D
 library to  solve an  instance of  the channel  problem. Here,  I will
 examine  and explain  each  line  of the  \c  main()  function of  the
 program. You  can find  the program  in the  subdirectory \c  tst. The
@@ -426,7 +441,7 @@ an instance of the channel problem:
   if ( ( argc != 3 ) && ( argc != 4 ) ) {
     cerr << "Usage: "
          << endl
-         << "\t\t channel2d arg1 arg2 [ arg3 ]"
+         << "\t\t Channel2D-App arg1 arg2 [ arg3 ]"
          << endl
          << "\t\t arg1: name of the file describing the polygonal channel"
          << endl
@@ -735,11 +750,11 @@ a plot of the spline and its control points:
 \image latex channel-2.eps "Example of a solution for the channel problem" width=2in
 
 You can  find more examples  of \c .chn  files in the  subdirectory \c
-data/channels. I wrote a script, \c run.sh, that executes \c channel2d
-on every  input file in  subdirectory \c data/channels, and  then save
-the resulting \c .spl files  in subdirectory \c data/spcurves. If your
-computer runs Mac  OSX or a Unix-like system, then  you can execute \c
-run.sh
+data/channels.  I  wrote  a  script,   \c  run.sh,  that  executes  \c
+Channel2D-App on  every input  file in subdirectory  \c data/channels,
+and  then  save  the  resulting  \c  .spl  files  in  subdirectory  \c
+data/spcurves. If  your computer runs  Mac OSX or a  Unix-like system,
+then you can execute \c run.sh
 
 \code
 sh run.sh
@@ -748,18 +763,18 @@ sh run.sh
 inside subdirectory \c scripts. I  didn't provide any GUI to visualize
 the curves specified by the \c .spl files. If you decide to write your
 own \c .chn  file to be tested  by my program, execute  the line below
-inside subdirectory \c  bin, where the program \c  channel2d should be
-located:
+inside subdirectory \c bin, where  the program \c Channel2D-App should
+be located:
 
 \code
-channel2d < your input CHN file > < your output SPL file >
+Channel2D-App < your input CHN file > < your output SPL file >
 \endcode
 
 If you want to see the instance  of the linear program assembled by my
 program and solved by the GLPK solver, execute the line
 
 \code
-channel2d < your input CHN file > < your output SPL file > < your output LP file >
+Channel2D-App < your input CHN file > < your output SPL file > < your output LP file >
 \endcode
 
 When the  execution ends, the third  file stores a description  of the
@@ -807,7 +822,7 @@ AUTHOR.
 
 I would  like to acknowledge  Dr. J&ouml;rg  Peters for hosting  me at
 CISE-UFL  during my  sabbatical  year (2015-2016),  and for  patiently
-helped me understand the papers that underlie the \c channel2d library
+helped me understand the papers that underlie the \c Channel2D library
 code.
 
 */
