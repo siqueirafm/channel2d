@@ -20,7 +20,7 @@ href="http://www.cise.ufl.edu/research/SurfLab/papers/02smChannel.pdf">PDF</a>)
 
 I really encourage you to read both  papers (at least Section 3 of the
 second  paper  from top  to  bottom)  before you  try  to  use the  \c
-channel2d library, as  the input file format requires  some idea about
+Channel2D library, as  the input file format requires  some idea about
 the input values and unknowns of the problem.
 
 For the  2D version of  the channel problem,  we are given  a channel,
@@ -220,7 +220,7 @@ If your machine runs Mac OSX, then you might want to replace the first
 command-line above to generate files of a XCode project:
 
 \code
-cmake -G Xcode -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
+cmake -GXcode -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file>
 \endcode
 
 If all  goes well, then you  should see the library  file \c Channel2D

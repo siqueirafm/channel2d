@@ -8,9 +8,11 @@ project(
 
 if (NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+  set (CMAKE_CONFIGURATION_TYPES Release)
 endif()
 
 message (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message (STATUS "Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
 
 message (STATUS "CMAKE_CURRENT_SOURCE_DIR is ${CMAKE_CURRENT_SOURCE_DIR}")
 
