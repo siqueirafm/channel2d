@@ -22,6 +22,14 @@ In a nutshell, this code implements a planar version of the algorithm described 
 
 Ashish Myles and Jorg Peters, Threading splines through 3D channels, Computer-Aided Design, 37(2), 2005, p. 139-148.
 
+## DEPENDENCIES
+
+The library  has one external  dependency: the GNU  Linear Programming
+Kit  ([GLPK](https://www.gnu.org/software/glpk)).   If you  intend  to
+build the Channel2D library for Windows, then you can find binaries of
+the         library         for        Win32         and         Win64
+[here](https://winglpk.sourceforge.net).
+
 ## INSTALLATION
 
 Please, take a look at Chapter 3 of the document refman.pdf inside subdirectory doc.
