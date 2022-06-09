@@ -1,4 +1,5 @@
 set (CHANNEL2DAPP_SRC ${CMAKE_CURRENT_SOURCE_DIR}/sources)
+set (CHANNEL2DLIB_INC ${CMAKE_CURRENT_SOURCE_DIR}/../library/headers)
 
 file (GLOB CPP_FILES ${CHANNEL2DAPP_SRC}/*.cpp)
 
@@ -25,14 +26,14 @@ target_sources(Channel2D-App PRIVATE ${CPP_FILES})
 target_include_directories(
   Channel2D-App
     PRIVATE
-       ${CHANNEL2D_INCLUDE_DIR}
+       ${CHANNEL2DLIB_INC}
        ${GLPK_INCLUDE_DIR}
 )
 
 target_link_libraries(
   Channel2D-App
     PRIVATE
-      -L${CHANNEL2D_LIB_DIR} -lChannel2D
+      Channel2D
       -L${GLPK_LIB_DIR} -lglpk
 )
 

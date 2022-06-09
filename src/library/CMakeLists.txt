@@ -15,9 +15,9 @@ add_library(Channel2D
 target_include_directories(Channel2D
   PUBLIC 
     $<INSTALL_INTERFACE:include>
+    ${CHANNEL2D_INC}
   PRIVATE
     ${GLPK_INCLUDE_DIR}
-    ${CHANNEL2D_INC}
 )
 
 # All users of this library will need at list C++ 11
