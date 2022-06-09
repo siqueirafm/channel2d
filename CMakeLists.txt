@@ -41,13 +41,16 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   # support folders in IDE's
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+  # indicate documentation build as an option and set it to ON by default
+  option(BUILD_DOC "Build documentation" ON)
+
   # docs only available if this is the main app
-  find_package(Doxygen)
-  #if (Doxygen_FOUND)
-  #  add_subdirectory(docs)
-  #else()
-  #  message (STATUS "Doxygen not found, not building docs")
-  #endif()
+  find_package(Doxygen REQUIRED dot)
+  if (Doxygen_FOUND)
+    add_subdirectory(doc)
+  else()
+    message (STATUS "Doxygen not found, not building docs")
+  endif()
 endif()
 
 # The channel2d library code is here
@@ -56,3 +59,8 @@ add_subdirectory(src/library)
 # The channel2d application code is here
 add_subdirectory(src/app)
 
+install(CODE
+  "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target doc)")
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/doc)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/latex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/doc)

@@ -39,5 +39,15 @@ else ()
   endif ()
 endif ()
 
+source_group(
+  TREE "${CHANNEL2D_INC}"
+  PREFIX "Header Files"
+  FILES ${HPP_FILES})
+
+source_group(
+  TREE "${CHANNEL2D_SRC}"
+  PREFIX "Source Files"
+  FILES ${CPP_FILES})
+
 install(TARGETS Channel2D DESTINATION lib)
 install(FILES ${HPP_FILES} DESTINATION include)
