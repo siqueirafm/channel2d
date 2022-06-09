@@ -128,7 +128,7 @@ int main( int argc , char* argv[] ) {
   if ( ( argc != 3 ) && ( argc != 4 ) ) {
     cerr << "Usage: "
          << endl
-         << "\t\t channel2d arg1 arg2 [ arg3 ]"
+         << "\t\t Channel2D-App arg1 arg2 [ arg3 ]"
          << endl
          << "\t\t arg1: name of the file describing the polygonal channel"
          << endl
