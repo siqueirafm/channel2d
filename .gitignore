@@ -36,6 +36,12 @@
 # Directory output
 **/Output
 
+# Directory html
+**/html
+
+# Directory latex
+**/latex
+
 # Emacs backup files
 *~
 
