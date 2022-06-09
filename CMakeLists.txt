@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 project(
   Channel2D
@@ -8,11 +8,9 @@ project(
 
 message (STATUS "CMAKE_CURRENT_SOURCE_DIR is ${CMAKE_CURRENT_SOURCE_DIR}")
 
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+if (NOT CMAKE_BUILD_TYPE)
   message (STATUS "Setting build type to 'Release' as none was specified")
   set (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build" FORCE)
-  set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
-  set (CMAKE_CONFIGURATION_TYPES Release)
 endif()
 
 message (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -62,6 +60,9 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   find_package(Doxygen QUIET)
   if (Doxygen_FOUND)
     add_subdirectory(doc)
+    install(CODE  "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target doc)")
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/doc)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/latex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/doc)
   else()
     message (STATUS "Doxygen not found, not building docs")
   endif()
@@ -73,8 +74,4 @@ add_subdirectory(src/library)
 # The channel2d application code is here
 add_subdirectory(src/app)
 
-install(CODE
-  "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target doc)")
 
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/doc)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/latex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/doc)
