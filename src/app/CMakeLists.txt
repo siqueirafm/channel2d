@@ -30,11 +30,18 @@ target_include_directories(
        ${GLPK_INCLUDE_DIR}
 )
 
+# make sure the linker can find the GLPK library
+target_link_directories(
+  Channel2D-App
+    PRIVATE
+       ${GLPK_LIB_DIR}
+)
+
 target_link_libraries(
   Channel2D-App
     PRIVATE
       Channel2D
-      -L${GLPK_LIB_DIR} -lglpk
+      ${GLPK_LIB_FILENAME}
 )
 
 install(TARGETS Channel2D-App DESTINATION bin)
