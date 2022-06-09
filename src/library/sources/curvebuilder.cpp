@@ -2607,9 +2607,9 @@ namespace channel {
 
     for ( size_t i = 1 ; i < _nc ; i++ ) {
       size_t corner_coord = compute_index_of_corner_barycentric_coordinate( i ) ;
-      std::stringstream ss ( std::stringstream::in | std::stringstream::out ) ;
-      ss << "co" << i ;
-      glp_set_col_name( lp , int( corner_coord ) + 1 , ss.str().c_str() ) ;
+      std::stringstream ss2 ( std::stringstream::in | std::stringstream::out ) ;
+      ss2 << "co" << i ;
+      glp_set_col_name( lp , int( corner_coord ) + 1 , ss2.str().c_str() ) ;
       glp_set_col_bnds( lp , int( corner_coord ) + 1 , GLP_DB , 0.40 , 0.60 ) ;
     }
 
