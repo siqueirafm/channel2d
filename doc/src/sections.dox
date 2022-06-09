@@ -227,14 +227,33 @@ Finally, open a terminal and type the following:
 \code
 cmake -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> -DGLPK_LIB_FILENAME=<GLPK lib file name>
 cmake --build build
-cmake --install build <path to your directory channel2d>
+cmake --install build --prefix <path to your directory channel2d>
 \endcode
 
-If your machine runs Mac OSX, then you might want to replace the first
-command-line above to generate files of a XCode project:
+If  your machine  runs Mac  OSX  or Windows,  then you  might want  to
+replace the  first and second command-lines  above. More specifically,
+if a you are  building on Mac OSX,  then you may want to  create a XCode
+project:
 
 \code
 cmake -GXcode -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> -DGLPK_LIB_FILENAME=<GLPK lib file name>
+\endcode
+
+Similarly, if you are building on Windows, then you may want to create
+a Visual Studio project:
+
+\code
+cmake -G "Visual Studio 15 2017 Win64" -S . -B build -DGLPK_INCLUDE_DIR=<path to GLPK header file> -DGLPK_LIB_DIR=<path to GLPK lib file> -DGLPK_LIB_FILENAME=<GLPK lib file name>
+\endcode
+
+At this  point, you should  have project files  and you could  use the
+corresponding IDE  to build the  code.  However,  if you want  to keep
+using console,  simply execute the  remaining two lines with  a simple
+change:
+
+\code
+cmake --build build --config Release
+cmake --install build --prefix <path to your directory channel2d>
 \endcode
 
 If all  goes well, then you  should see the library  file \c Channel2D
