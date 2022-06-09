@@ -1,6 +1,6 @@
 # The Channel2D Libray  
 
-Code for threading uniform, cubic b-spline curves into polygonsl channels.
+Code for threading uniform, cubic b-spline curves into polygonal channels.
 
 ## INTRODUCTION
 
@@ -24,11 +24,11 @@ Ashish Myles and Jorg Peters, Threading splines through 3D channels, Computer-Ai
 
 ## INSTALLATION
 
-Please, take a look at Chapter 3 of the document \c refman.pdf inside subdirectory \c doc.
+Please, take a look at Chapter 3 of the document refman.pdf inside subdirectory doc.
 
 ## EXAMPLES
 
-You can run the executable 'channel2d-app' on the data files in subdirectory  
+You can run the executable 'Channel2d-App' on the data files in subdirectory
 
   <path to directory channel2d>/data  
 
